@@ -3,6 +3,7 @@
 #include <wrl.h>
 #define DIRECTINPUT_VERSION     0x0800
 #include <dinput.h>
+#include "WinApp.h"
 
 
 class Input
@@ -13,7 +14,7 @@ public:
 
 public:	// メンバ関数
 	// 初期化
-	void Initialize(HINSTANCE hInstance, HWND hwnd);
+	void Initialize(WinApp* winApp);
 
 	/// <summary>
 	/// キーの押下をチェック
@@ -39,4 +40,6 @@ private: // メンバ変数
 	BYTE key[256] = {};
 	// 前回の全キーの状態
 	BYTE keyPre[256] = {};
+	// WindowsAPI
+	WinApp* winApp = nullptr;
 };

@@ -216,6 +216,10 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     Input* input = nullptr;
     WinApp* winApp = nullptr;
 
+    // WinAppの初期化
+    winApp = new WinApp();
+    winApp->Initialize();
+
 #pragma region WindowsAPI初期化処理
 
 
@@ -438,10 +442,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     // 入力の初期化
     input = new Input();
-    input->Initialize(winApp->GetHInstance(), winApp->GetHwnd());
-    // WinAppの初期化
-    winApp = new WinApp();
-    winApp->Initialize();
+    input->Initialize(winApp);
 
 #pragma region 描画初期化処理
 
@@ -1079,11 +1080,13 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     }
 
+    // 入力解放
     delete input;
-    delete winApp;
 
-    // ウィンドウクラスを登録解除
-    UnregisterClass(w.lpszClassName, w.hInstance);
+    // WindowsAPIの終了処理
+    winApp->Finalize();
+    // WindowsAPI解放
+    delete winApp;
 
     return 0;
 }
