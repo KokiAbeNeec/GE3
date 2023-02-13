@@ -491,7 +491,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
         16, 17, 19, 19, 18, 16,
         20, 21, 23, 23, 22, 20
     };
-
+    
     // 法線の計算
     for (int i = 0; i < _countof(indices) / 3; i++)
     {// 三角形１つごとに計算していく
@@ -917,14 +917,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
     // ゲームループ
     while (true) {
-        // メッセージがある？
-        if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-            TranslateMessage(&msg); // キー入力メッセージの処理
-            DispatchMessage(&msg); // プロシージャにメッセージを送る
-        }
-
-        // ✖ボタンで終了メッセージが来たらゲームループを抜ける
-        if (msg.message == WM_QUIT) {
+        // Windowsのメッセージ処理
+        if (winApp->ProcessMessage()) {
+            // ゲームループを抜ける
             break;
         }
 
