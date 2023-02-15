@@ -1,5 +1,6 @@
 ﻿#include "WinApp.h"
 
+#pragma comment(lib,"winmm.lib")
 
 LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 {
@@ -14,6 +15,8 @@ LRESULT WinApp::WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam)
 
 void WinApp::Initialize()
 {
+    timeBeginPeriod(1);
+
     w.cbSize = sizeof(WNDCLASSEX);
     w.lpfnWndProc = (WNDPROC)WindowProc; // ウィンドウプロシージャを設定
     w.lpszClassName = L"DirectXGame"; // ウィンドウクラス名

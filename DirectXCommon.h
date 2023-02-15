@@ -2,6 +2,7 @@
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <wrl.h>
+#include <chrono>
 #include "WinApp.h"
 
 
@@ -13,12 +14,22 @@ public:
 	void PreDraw();
 	void PostDraw();
 private:
+	// デバイスの生成
 	void INitializeDevice();
+	// コマンド関連の初期化
 	void INitializeCommand();
+	// スワップチェーンの初期化
 	void INitializeSwapchain();
+	// レンダーターゲットビューの初期化
 	void INitializeRenderTargetView();
+	// 深度バッファの初期化
 	void INitializeDepthBuffer();
+	// フェンスの初期化
 	void INitializeFence();
+	// FPS固定初期化
+	void INitializeFixFPS();
+	// FPS固定更新
+	void UpdateFixFPS();
 public:
 	// デバイス取得
 	ID3D12Device* GetDevice() const { return device.Get(); }
@@ -55,6 +66,8 @@ private:
 	UINT64 fenceVal = 0;
 	// リソースバリアの設定
 	D3D12_RESOURCE_BARRIER barrierDesc{};
+	// 記録時間(FPS固定用)
+	std::chrono::steady_clock::time_point reference_;
 
 	// WindowsAPI
 	WinApp* winApp = nullptr;
