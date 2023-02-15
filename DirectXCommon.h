@@ -19,6 +19,11 @@ private:
 	void INitializeRenderTargetView();
 	void INitializeDepthBuffer();
 	void INitializeFence();
+public:
+	// デバイス取得
+	ID3D12Device* GetDevice() const { return device.Get(); }
+	// コマンドリスト取得
+	ID3D12GraphicsCommandList* GetCommandList() const { return commandList.Get(); }
 private:
 	// DirectX12デバイス
 	Microsoft::WRL::ComPtr<ID3D12Device> device;
