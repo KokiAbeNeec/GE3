@@ -10,6 +10,8 @@ class DirectXCommon
 {
 public:
 	void Initialize(WinApp* winApp);
+	void PreDraw();
+	void PostDraw();
 private:
 	void INitializeDevice();
 	void INitializeCommand();
@@ -34,12 +36,20 @@ private:
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc{};
 	// デスクリプタヒープ
 	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> rtvHeap;
+	D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc{};
 	// バックバッファ
 	std::vector<Microsoft::WRL::ComPtr<ID3D12Resource>> backBuffers;
-	// リソース生成
+	// リソース
 	Microsoft::WRL::ComPtr<ID3D12Resource> depthBuff;
-	// フェンスの生成
+	// 深度ビュー用デスクリプタヒープ
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> dsvHeap;
+	D3D12_DESCRIPTOR_HEAP_DESC dsvHeapDesc{};
+	// フェンス
 	Microsoft::WRL::ComPtr<ID3D12Fence> fence;
+	// フェンス値
+	UINT64 fenceVal = 0;
+	// リソースバリアの設定
+	D3D12_RESOURCE_BARRIER barrierDesc{};
 
 	// WindowsAPI
 	WinApp* winApp = nullptr;
