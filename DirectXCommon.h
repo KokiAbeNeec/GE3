@@ -3,6 +3,7 @@
 #include <dxgi1_6.h>
 #include <wrl.h>
 #include <chrono>
+#include <vector>
 #include "WinApp.h"
 
 
