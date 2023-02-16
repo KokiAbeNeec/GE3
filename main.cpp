@@ -1,6 +1,8 @@
 ﻿#include "Input.h"
 #include "WinApp.h"
 #include "DirectXCommon.h"
+#include "SpriteCommon.h"
+#include "Sprite.h"
 
 
 // Windowsアプリでのエントリーポイント(main関数)
@@ -10,6 +12,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     Input* input = nullptr;
     WinApp* winApp = nullptr;
     DirectXCommon* dxCommon = nullptr;
+    SpriteCommon* spriteCommon = nullptr;
 
     // WinAppの初期化
     winApp = new WinApp();
@@ -20,14 +23,20 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     // 入力の初期化
     input = new Input();
     input->Initialize(winApp);
+    // SpriteCommonの初期化
+    spriteCommon = new SpriteCommon;
+    spriteCommon->Initialize(dxCommon);
 #pragma endregion 基盤システムの初期化
 
 #pragma region WindowsAPI初期化処理
-    MSG msg{};  // メッセージ
+    // メッセージ
+    MSG msg{};
 #pragma endregion WindowsAPI初期化処理
 
 #pragma region 最初のシーンの初期化
-
+    // Sprite初期化
+    Sprite* sprite = new Sprite();
+    sprite->Initialize(spriteCommon);
 #pragma endregion 最初のシーンの初期化
 
     // ゲームループ
@@ -47,11 +56,14 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 
 #pragma endregion 最初のシーンの更新
 
-        // 描画処理
+        // DirectX描画前処理
         dxCommon->PreDraw();
 
 #pragma region 最初のシーンの描画
-
+        // SpriteCommon描画前処理
+        spriteCommon->PreDraw();
+        // Sprite描画
+        sprite->Draw();
 #pragma endregion 最初のシーンの描画
 
         // 描画後処理
@@ -59,7 +71,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     }
 
 #pragma region 最初のシーンの終了
-
+    // Sprite解放
+    delete sprite;
 #pragma endregion 最初のシーンの終了
 
 #pragma region 基盤システムの終了
@@ -71,6 +84,8 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     winApp->Finalize();
     // WindowsAPI解放
     delete winApp;
+    // SpriteCommon解放
+    delete spriteCommon;
 #pragma endregion 基盤システムの終了
 
     return 0;
