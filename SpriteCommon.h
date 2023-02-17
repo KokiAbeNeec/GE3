@@ -31,6 +31,7 @@ public: // ƒƒ“ƒoŠÖ”
 	void SetTextureCommands(uint32_t index);
 	// getter
 	DirectXCommon* GetDirectXCommon() const { return dxCommon; }
+	ID3D12Resource* GetTextureBuffer(uint32_t index)const { return texBuff[index].Get(); }
 private: // Ã“Iƒƒ“ƒo•Ï”
 	// SRV‚ÌÅ‘åŒÂ”
 	static const size_t kMaxSRVCount = 2056;

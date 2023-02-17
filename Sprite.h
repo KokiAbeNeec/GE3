@@ -30,7 +30,7 @@ public: // 構造体
 	};
 public: // メンバ関数
 	// 初期化
-	void Initialize(SpriteCommon* spriteCommon);
+	void Initialize(SpriteCommon* spriteCommon, uint32_t textureIndex = UINT32_MAX);
 	// 更新
 	void Update();
 	// 描画
@@ -45,6 +45,8 @@ public: // メンバ関数
 	void SetIsFlipY(const bool& isFlipY) { isFlipY_ = isFlipY; }
 	void SetIsInvisible(const bool& isInvisible) { isInvisible_ = isInvisible; }
 	void SetTextureIndex(const uint32_t index) { textureIndex_ = index; }
+	void SetTextureLeftTop(const DirectX::XMFLOAT2& textureLeftTop) { textureLeftTop_ = textureLeftTop; }
+	void SetTextureSize_(const DirectX::XMFLOAT2& textureSize) { textureSize_ = textureSize; }
 	// getter
 	const DirectX::XMFLOAT2& GetPosition()const { return position_; }
 	const float& GetRotation()const { return rotationZ_; }
@@ -55,10 +57,18 @@ public: // メンバ関数
 	const bool& GetIsFlipY()const { return isFlipY_; }
 	const bool& GetIsInvisible()const { return isInvisible_; }
 	const uint32_t GetTextureIndex()const { return textureIndex_; }
+	const DirectX::XMFLOAT2& GetTextureLeftTop()const { textureLeftTop_; }
+	const DirectX::XMFLOAT2& GetTextureSize_()const { textureSize_; }
 private: // メンバ変数
 	HRESULT result;
 	// テクスチャ番号
 	uint32_t textureIndex_ = 0;
+	// テクスチャ左上座標
+	DirectX::XMFLOAT2 textureLeftTop_ = { 0.0f,0.0f };
+	// テクスチャ切り出しサイズ
+	DirectX::XMFLOAT2 textureSize_ = { 100.0f,100.0f };
+	// テクスチャサイズをイメージに合わせる
+	void AdjustTextureSize();
 	// スプライト情報
 	float rotationZ_;
 	// 座標

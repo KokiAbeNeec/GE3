@@ -38,9 +38,9 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma region 最初のシーンの初期化
     // Sprite初期化
     Sprite* sprite = new Sprite();
-    sprite->Initialize(spriteCommon);
-    sprite->SetColor({ 1,1,1,1 });
     sprite->SetTextureIndex(1);
+    sprite->Initialize(spriteCommon, 1);
+    sprite->SetColor({ 1,1,1,1 });
 #pragma endregion 最初のシーンの初期化
 
     // ゲームループ

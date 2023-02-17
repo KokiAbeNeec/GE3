@@ -5,9 +5,35 @@ using namespace DirectX;
 using namespace Microsoft::WRL;
 
 
-void Sprite::Initialize(SpriteCommon* spriteCommon)
+void Sprite::Initialize(SpriteCommon* spriteCommon, uint32_t textureIndex)
 {
 	this->spriteCommon = spriteCommon;
+
+    // テクスチャサイズをイメージに合わせる
+    if (textureIndex != UINT32_MAX) {
+        textureIndex_ = textureIndex;
+        AdjustTextureSize();
+        // テクスチャサイズをスプライトのサイズに適用
+        size_ = textureSize_;
+    }
+
+    ID3D12Resource* textBuffer = spriteCommon->GetTextureBuffer(textureIndex_);
+
+    if (textBuffer) {
+        // テクスチャ情報取得
+        D3D12_RESOURCE_DESC resDesc = textBuffer->GetDesc();
+
+        // アンカーポイント
+        float tex_left = textureLeftTop_.x / resDesc.Width;
+        float tex_right = (textureLeftTop_.x + textureSize_.x) / resDesc.Width;
+        float tex_top = textureLeftTop_.y / resDesc.Height;
+        float tex_bottom = (textureLeftTop_.y + textureSize_.y) / resDesc.Height;
+        // 頂点データuv
+        vertices_[LB].uv = { tex_left,tex_bottom }; // 左下
+        vertices_[LT].uv = { tex_left,tex_top }; // 左上
+        vertices_[RB].uv = { tex_right,tex_bottom }; // 右下
+        vertices_[RT].uv = { tex_right,tex_top }; // 右上
+    }
 
     // アンカーポイント
     float left = (0.0f - anchorPoint_.x) * size_.x;
@@ -162,6 +188,24 @@ void Sprite::Initialize(SpriteCommon* spriteCommon)
 
 void Sprite::Update()
 {
+    ID3D12Resource* textBuffer = spriteCommon->GetTextureBuffer(textureIndex_);
+
+    if (textBuffer) {
+        // テクスチャ情報取得
+        D3D12_RESOURCE_DESC resDesc = textBuffer->GetDesc();
+
+        // アンカーポイント
+        float tex_left = textureLeftTop_.x / resDesc.Width;
+        float tex_right = (textureLeftTop_.x + textureSize_.x) / resDesc.Width;
+        float tex_top = textureLeftTop_.y / resDesc.Height;
+        float tex_bottom = (textureLeftTop_.y + textureSize_.y) / resDesc.Height;
+        // 頂点データuv
+        vertices_[LB].uv = { tex_left,tex_bottom }; // 左下
+        vertices_[LT].uv = { tex_left,tex_top }; // 左上
+        vertices_[RB].uv = { tex_right,tex_bottom }; // 右下
+        vertices_[RT].uv = { tex_right,tex_top }; // 右上
+    }
+
     // アンカーポイント
     float left = (0.0f - anchorPoint_.x) * size_.x;
     float right = (1.0f - anchorPoint_.x) * size_.x;
@@ -177,11 +221,11 @@ void Sprite::Update()
         top = -top;
         bottom = -bottom;
     }
-    // 頂点データ
-    vertices_[LB] = { { left,  bottom, 0.0f },{0.0f,1.0f} }; // 左下
-    vertices_[LT] = { { left, top,     0.0f },{0.0f,0.0f} }; // 左上
-    vertices_[RB] = { { right, bottom, 0.0f },{1.0f,1.0f} }; // 右下
-    vertices_[RT] = { { right, top,    0.0f },{1.0f,0.0f} }; // 右上
+    // 頂点データ座標
+    vertices_[LB].pos = { left,  bottom, 0.0f }; // 左下
+    vertices_[LT].pos = { left, top,     0.0f }; // 左上
+    vertices_[RB].pos = { right, bottom, 0.0f }; // 右下
+    vertices_[RT].pos = { right, top,    0.0f }; // 右上
 
     // 頂点データ転送
     Vertex* vertMap = nullptr;
@@ -238,4 +282,16 @@ void Sprite::Draw()
     spriteCommon->GetDirectXCommon()->GetCommandList()->SetGraphicsRootConstantBufferView(2, constBuffTransform->GetGPUVirtualAddress());
     // 描画コマンド
     spriteCommon->GetDirectXCommon()->GetCommandList()->DrawInstanced(4, 1, 0, 0);
+}
+
+void Sprite::AdjustTextureSize()
+{
+    ID3D12Resource* textBuffer = spriteCommon->GetTextureBuffer(textureIndex_);
+    assert(textBuffer);
+
+    // テクスチャ情報取得
+    D3D12_RESOURCE_DESC resDesc = textBuffer->GetDesc();
+
+    textureSize_.x = static_cast<float>(resDesc.Width);
+    textureSize_.y = static_cast<float>(resDesc.Height);
 }
