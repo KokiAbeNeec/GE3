@@ -9,16 +9,29 @@ void Sprite::Initialize(SpriteCommon* spriteCommon)
 {
 	this->spriteCommon = spriteCommon;
 
+    // アンカーポイント
+    float left = (0.0f - anchorPoint_.x) * size_.x;
+    float right = (1.0f - anchorPoint_.x) * size_.x;
+    float top = (0.0f - anchorPoint_.y) * size_.y;
+    float bottom = (1.0f - anchorPoint_.y) * size_.y;
+    // 左右反転
+    if (isFlipX_) {
+        left = -left;
+        right = -right;
+    }
+    // 上下反転
+    if (isFlipY_) {
+        top = -top;
+        bottom = -bottom;
+    }
     // 頂点データ
-    Vertex vertices[] = {
-        { {   0.0f, 100.0f, 0.0f},{0.0f, 1.0f}}, // 左下
-        { {   0.0f,   0.0f, 0.0f},{0.0f, 0.0f}}, // 左上
-        { { 100.0f, 100.0f, 0.0f},{1.0f, 1.0f}}, // 右下
-        { { 100.0f,   0.0f, 0.0f},{1.0f, 0.0f}}, // 右上
-    };
+    vertices_[LB] = { { left,  bottom, 0.0f },{0.0f,1.0f} }; // 左下
+    vertices_[LT] = { { left, top,     0.0f },{0.0f,0.0f} }; // 左上
+    vertices_[RB] = { { right, bottom, 0.0f },{1.0f,1.0f} }; // 右下
+    vertices_[RT] = { { right, top,    0.0f },{1.0f,0.0f} }; // 右上
 
 	// 頂点データ全体のサイズ = 頂点データ一つ分のサイズ * 頂点データの要素数
-	UINT sizeVB = static_cast<UINT>(sizeof(vertices[0]) * _countof(vertices));
+	UINT sizeVB = static_cast<UINT>(sizeof(vertices_[0]) * _countof(vertices_));
 
     // 頂点バッファの設定
     D3D12_HEAP_PROPERTIES heapProp{};   // ヒープ設定
@@ -48,8 +61,8 @@ void Sprite::Initialize(SpriteCommon* spriteCommon)
     result = vertBuff->Map(0, nullptr, (void**)&vertMap);
     assert(SUCCEEDED(result));
     // 全頂点に対して
-    for (int i = 0; i < _countof(vertices); i++) {
-        vertMap[i] = vertices[i];   // 座標をコピー
+    for (int i = 0; i < _countof(vertices_); i++) {
+        vertMap[i] = vertices_[i];   // 座標をコピー
     }
     // 繋がりを解除
     vertBuff->Unmap(0, nullptr);
@@ -59,7 +72,7 @@ void Sprite::Initialize(SpriteCommon* spriteCommon)
     // 頂点バッファのサイズ
     vbView.SizeInBytes = sizeVB;
     // 頂点１つ分のデータサイズ
-    vbView.StrideInBytes = sizeof(vertices[0]);
+    vbView.StrideInBytes = sizeof(vertices_[0]);
 
     // マテリアル
     {
@@ -122,24 +135,24 @@ void Sprite::Initialize(SpriteCommon* spriteCommon)
         XMMATRIX matWorld;
         matWorld = XMMatrixIdentity();
 
-        rotationZ = 0.f;
-        position = { 0.f,0.f,0.f };
+        rotationZ_ = 0.0f;
+        position_ = { 0.0f,0.0f };
 
         // 回転
         XMMATRIX matRot;
         matRot = XMMatrixIdentity();
-        matRot = XMMatrixRotationZ(XMConvertToRadians(rotationZ));
+        matRot = XMMatrixRotationZ(XMConvertToRadians(rotationZ_));
         matWorld *= matRot;
 
         // 平行
         XMMATRIX matTrans;
-        matTrans = XMMatrixTranslation(position.x, position.y, position.z);
+        matTrans = XMMatrixTranslation(position_.x, position_.y, 0.0f);
         matWorld *= matTrans;
 
         // 射影変換
         XMMATRIX matProjection = XMMatrixOrthographicOffCenterLH(
-            0.f, WinApp::window_width,
-            WinApp::window_height, 0.f,
+            0.0f, WinApp::window_width,
+            WinApp::window_height, 0.0f,
             0.0f, 1.0f
         );
 
@@ -149,7 +162,39 @@ void Sprite::Initialize(SpriteCommon* spriteCommon)
 
 void Sprite::Update()
 {
-    constMapMaterial->color = color;
+    // アンカーポイント
+    float left = (0.0f - anchorPoint_.x) * size_.x;
+    float right = (1.0f - anchorPoint_.x) * size_.x;
+    float top = (0.0f - anchorPoint_.y) * size_.y;
+    float bottom = (1.0f - anchorPoint_.y) * size_.y;
+    // 左右反転
+    if (isFlipX_) {
+        left = -left;
+        right = -right;
+    }
+    // 上下反転
+    if (isFlipY_) {
+        top = -top;
+        bottom = -bottom;
+    }
+    // 頂点データ
+    vertices_[LB] = { { left,  bottom, 0.0f },{0.0f,1.0f} }; // 左下
+    vertices_[LT] = { { left, top,     0.0f },{0.0f,0.0f} }; // 左上
+    vertices_[RB] = { { right, bottom, 0.0f },{1.0f,1.0f} }; // 右下
+    vertices_[RT] = { { right, top,    0.0f },{1.0f,0.0f} }; // 右上
+
+    // 頂点データ転送
+    Vertex* vertMap = nullptr;
+    result = vertBuff->Map(0, nullptr, (void**)&vertMap);
+    assert(SUCCEEDED(result));
+    // 全頂点に対して
+    for (int i = 0; i < _countof(vertices_); i++) {
+        vertMap[i] = vertices_[i];   // 座標をコピー
+    }
+    // 繋がりを解除
+    vertBuff->Unmap(0, nullptr);
+
+    constMapMaterial->color = color_;
 
     // ワールド変換行列
     XMMATRIX matWorld;
@@ -158,18 +203,18 @@ void Sprite::Update()
     // 回転
     XMMATRIX matRot;
     matRot = XMMatrixIdentity();
-    matRot = XMMatrixRotationZ(XMConvertToRadians(rotationZ));
+    matRot = XMMatrixRotationZ(XMConvertToRadians(rotationZ_));
     matWorld *= matRot;
 
     // 平行
     XMMATRIX matTrans;
-    matTrans = XMMatrixTranslation(position.x, position.y, position.z);
+    matTrans = XMMatrixTranslation(position_.x, position_.y, 0.0f);
     matWorld *= matTrans;
 
     // 射影変換
     XMMATRIX matProjection = XMMatrixOrthographicOffCenterLH(
-        0.f, WinApp::window_width,
-        WinApp::window_height, 0.f,
+        0.0f, WinApp::window_width,
+        WinApp::window_height, 0.0f,
         0.0f, 1.0f
     );
 
@@ -178,6 +223,10 @@ void Sprite::Update()
 
 void Sprite::Draw()
 {
+    if (isInvisible_) {
+        return;
+    }
+
     // 頂点バッファビューの設定コマンド
     spriteCommon->GetDirectXCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vbView);
     // 定数バッファビュー(CBV)の設定コマンド

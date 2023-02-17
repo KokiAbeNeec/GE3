@@ -37,6 +37,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
     // Sprite初期化
     Sprite* sprite = new Sprite();
     sprite->Initialize(spriteCommon);
+    sprite->SetColor({ 0,1,1,1 });
 #pragma endregion 最初のシーンの初期化
 
     // ゲームループ
@@ -53,7 +54,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 #pragma endregion 基盤システムの更新
 
 #pragma region 最初のシーンの更新
-
+        DirectX::XMFLOAT2 pos = sprite->GetPosition();
+        //pos.x += 0.1f;
+        sprite->SetPosition(pos);
+        float rotZ = sprite->GetRotation();
+        //rotZ += 0.1f;
+        sprite->SetRotation(rotZ);
+        DirectX::XMFLOAT2 siz = sprite->GetSize();
+        //siz.y += 1.0f;
+        sprite->SetSize(siz);
+        sprite->Update();
 #pragma endregion 最初のシーンの更新
 
         // DirectX描画前処理
