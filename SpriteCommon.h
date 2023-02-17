@@ -1,4 +1,5 @@
 #pragma once
+#include <DirectXMath.h>
 #include "DirectXCommon.h"
 
 
@@ -20,6 +21,12 @@ private: // メンバ変数
 	Microsoft::WRL::ComPtr<ID3D12RootSignature> rootSignature;
 	// パイプランステート
 	Microsoft::WRL::ComPtr<ID3D12PipelineState> pipelineState;
+	// 画像イメージデータ配列
+	DirectX::XMFLOAT4* imageData;
+	// テクスチャバッファの生成
+	Microsoft::WRL::ComPtr<ID3D12Resource> texBuff;
+	// 設定を元にSRV用デスクリプタヒープを生成
+	Microsoft::WRL::ComPtr<ID3D12DescriptorHeap> srvHeap;
 	// 頂点シェーダオブジェクト
 	ID3DBlob* vsBlob = nullptr;
 	// ピクセルシェーダオブジェクト
