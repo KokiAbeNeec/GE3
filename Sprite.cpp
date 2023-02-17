@@ -223,9 +223,13 @@ void Sprite::Update()
 
 void Sprite::Draw()
 {
+    // 非表示
     if (isInvisible_) {
         return;
     }
+
+    // テクスチャコマンド
+    spriteCommon->SetTextureCommands(textureIndex_);
 
     // 頂点バッファビューの設定コマンド
     spriteCommon->GetDirectXCommon()->GetCommandList()->IASetVertexBuffers(0, 1, &vbView);

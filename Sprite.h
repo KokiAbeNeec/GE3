@@ -43,7 +43,8 @@ public: // メンバ関数
 	void SetAnchorPoint(const DirectX::XMFLOAT2& anchorPoint) { anchorPoint_ = anchorPoint; }
 	void SetIsFlipX(const bool& isFlipX) { isFlipX_ = isFlipX; }
 	void SetIsFlipY(const bool& isFlipY) { isFlipY_ = isFlipY; }
-	void SetIsInvisible_(const bool& isInvisible) { isInvisible_ = isInvisible; }
+	void SetIsInvisible(const bool& isInvisible) { isInvisible_ = isInvisible; }
+	void SetTextureIndex(const uint32_t index) { textureIndex_ = index; }
 	// getter
 	const DirectX::XMFLOAT2& GetPosition()const { return position_; }
 	const float& GetRotation()const { return rotationZ_; }
@@ -52,9 +53,12 @@ public: // メンバ関数
 	const DirectX::XMFLOAT2& GetAnchorPoint()const { return anchorPoint_; }
 	const bool& GetIsFlipX()const { return isFlipX_; }
 	const bool& GetIsFlipY()const { return isFlipY_; }
-	const bool& GetIsInvisible_()const { return isInvisible_; }
+	const bool& GetIsInvisible()const { return isInvisible_; }
+	const uint32_t GetTextureIndex()const { return textureIndex_; }
 private: // メンバ変数
 	HRESULT result;
+	// テクスチャ番号
+	uint32_t textureIndex_ = 0;
 	// スプライト情報
 	float rotationZ_;
 	// 座標
@@ -72,7 +76,6 @@ private: // メンバ変数
 	// 非表示フラグ
 	bool isInvisible_ = false;
 	DirectX::XMFLOAT4 color = { 1,0,0,0.5f };
-
 	// 頂点データ
 	Vertex vertices_[4];
 	// 頂点バッファの生成
